@@ -1,0 +1,74 @@
+import csv    #
+import datetime
+
+out_os = open("f:\\data_clean_6.0_os.csv", 'w+', newline='')
+out_od = open("f:\\data_clean_6.0_od.csv", 'w+', newline='')
+csv_writer_os = csv.writer(out_os, dialect='excel')
+csv_writer_od= csv.writer(out_od, dialect='excel')
+def string_toDatetime(string):
+    """把字符串转成datetime"""
+    return datetime.datetime.strptime(string ,"%d-%b-%y %H:%M:%S")
+
+def find(array):
+    print('-------------')
+    minostime = string_toDatetime("10-Sep-20 11:11:11")
+    minodtime=minostime
+    os = -1
+    od = -1
+    for index in  range(len(patient)):
+        each = patient[index]
+        time=string_toDatetime(each[3]+" "+each[4])
+        if each[5]=='OS' and time<minostime:
+            os=index
+            minostime=time
+        if each[5]=='OD' and time<minodtime:
+            od=index
+            minodtime=time
+        sc1 = float(each[7])+float(each[8])/2
+        print(each[7])
+        each.append(sc1)
+        type1=0
+        if abs(sc1)<=3:
+            type1=1
+        if abs(sc1)>=6:
+            type1=3
+        if abs(sc1) < 6 and abs(sc1) > 3:
+            type1=2
+        each.append(type1)
+    if os!=-1 and float(patient[os][14])>6:
+        print(patient[os])
+        csv_writer_os.writerow(patient[os])
+    if od!=-1 and float(patient[od][14])>6:
+        print(patient[od])
+        csv_writer_od.writerow(patient[od])
+
+
+
+
+
+
+csv_reader = csv.reader(open("f:\\data.csv", encoding='utf-8'))
+patient = []
+id = -1
+for row in csv_reader:
+    if row[3]=='Date':
+       row.append('sc1')
+       #row.append('sc2')
+       row.append('type1')
+       #row.append
+       csv_writer_os.writerow(row)
+       csv_writer_od.writerow(row)
+       continue;
+    if row[2]=='end':
+        break
+    if(id==row[2]):
+        patient.append(row)
+    else:
+        find(patient)
+        patient.clear()
+        id = row[2]
+        patient.append(row)
+
+out_os.close()
+out_od.close()
+
